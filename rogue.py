@@ -42,22 +42,19 @@ def populate_dungeon():
   global player_x, player_y
   stairs_pos = choice(get_floor_tiles())
   dungeon[stairs_pos[1]][stairs_pos[0]] = '%'
-  monster_num = randrange(6, 12)
-  for i in range(monster_num):
+  monster_idle = randrange(6, 12+dungeon_level)
+  monster_guard = randrange(2, min(12, 5+int(dungeon_level/2)))
+  for i in range(monster_idle):
     monster = choice(monsters[dungeon_level-1: dungeon_level+3])
     monster_pos = choice(get_floor_tiles())
     dungeon[monster_pos[1]][monster_pos[0]] = monster
-    
-  monster_block = randrange(2, 5)
-  for i in range(monster_num):
+  for i in range(monster_guard):
     monster = choice(monsters[dungeon_level-1: dungeon_level+3])
     monster_pos = choice(get_blocking_tiles())
     dungeon[monster_pos[1]][monster_pos[0]] = monster
-    
   if dungeon_level == AMULET_LEVEL:
     amulet_pos = choice(get_floor_tiles())
     dungeon[amulet_pos[1]][amulet_pos[0]] = '!'
-  
   player_pos = choice(get_floor_tiles())
   player_x = player_pos[0]
   player_y = player_pos[1]
