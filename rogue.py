@@ -5,21 +5,33 @@ from random import randrange, choice
 ROWS = 23
 COLS = 79
 
+AMULET_LEVEL = 3
+
 dungeon = [[' ']*COLS for i in range(ROWS)]
+dungeon_level = 1
 
 player_x = 0
 player_y = 0
+player_amulet = False
 
-def populate_dungeon():
-  global player_x, player_y
+def get_floor_tiles():
   floor_tiles = []
   for row in range(ROWS):
     for col in range(COLS):
       if dungeon[row][col] == '.':
         floor_tiles.append([col, row])
-  player_pos = choice(floor_tiles)
+  return floor_tiles
+
+def populate_dungeon():
+  global player_x, player_y
+  player_pos = choice(get_floor_tiles())
   player_x = player_pos[0]
   player_y = player_pos[1]
+  stairs_pos = choice(get_floor_tiles())
+  dungeon[stairs_pos[1]][stairs_pos[0]] = '%'
+  if dungeon_level == AMULET_LEVEL:
+    amulet_pos = choice(get_floor_tiles())
+    dungeon[amulet_pos[1]][amulet_pos[0]] = '!'
 
 def make_room(x, y, w, h):
   for row in range(y, y + h):
@@ -117,6 +129,8 @@ def render_level():
       screen.addch(row, col, dungeon[row][col])
     screen.clrtoeol()
     screen.addch('\n')
+  screen.addstr(23, 0, f'Level: {dungeon_level}  Amulet Of Yendor: {player_amulet}')
+  screen.clrtoeol()
   curses.curs_set(0)
   screen.addch(player_y, player_x, '@')
   screen.move(player_y, player_x)
@@ -124,7 +138,7 @@ def render_level():
   screen.refresh()
 
 def read_keys():
-  global player_x, player_y
+  global player_x, player_y, dungeon_level, player_amulet
   ch = -1
   while (ch == -1): ch = screen.getch()
   if ch == ord('h'):
@@ -142,6 +156,17 @@ def read_keys():
   elif ch == ord('q'):
     curses.endwin()
     sys.exit()
+  
+  if dungeon[player_y][player_x] == '%':
+    dungeon_level = dungeon_level+1 if not player_amulet else dungeon_level-1
+    if not dungeon_level:
+      curses.endwin()
+      print('You won')
+      sys.exit()
+    else: make_level()
+  elif dungeon[player_y][player_x] == '!':
+    player_amulet = True
+    dungeon[player_y][player_x] = '.'
 
 #while True:
 #  make_level()
