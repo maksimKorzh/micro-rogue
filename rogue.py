@@ -8,6 +8,7 @@ COLS = 79
 
 AMULET_LEVEL = 3
 
+visited = []
 dungeon = [[' ']*COLS for i in range(ROWS)]
 dungeon_level = 1
 monsters = string.ascii_uppercase
@@ -115,7 +116,8 @@ def make_vertical_passage(x, y):
     step += 1
 
 def make_level():
-
+  global visited
+  visited = []
   #for i in range(7): dungeon.append(['o']*26 + [' '] + ['o']*26 + [' '] + ['o']*26)
   #dungeon.append([' ']*COLS)
   #for i in range(7): dungeon.append(['o']*26 + [' '] + ['o']*26 + [' '] + ['o']*26)
@@ -152,7 +154,11 @@ def render_level():
   screen.move(0, 0)
   for row in range(ROWS):
     for col in range(COLS):
-      screen.addch(row, col, dungeon[row][col])
+      if [col, row] in visited: screen.addch(row, col, dungeon[row][col])
+      elif row in range(player_y-1, player_y+2) and col in range(player_x-1, player_x+2):
+        screen.addch(row, col, dungeon[row][col])
+        visited.append([col, row])
+      else: screen.addch(row, col, ' ')
     screen.clrtoeol()
     screen.addch('\n')
   screen.addstr(23, 0, f'Level: {dungeon_level}  Amulet Of Yendor: {player_amulet}')
@@ -164,7 +170,7 @@ def render_level():
   screen.refresh()
 
 def read_keys():
-  global player_x, player_y, dungeon_level, player_amulet
+  global player_x, player_y
   ch = -1
   while (ch == -1): ch = screen.getch()
   if ch == ord('h'):
@@ -182,7 +188,9 @@ def read_keys():
   elif ch == ord('q'):
     curses.endwin()
     sys.exit()
-  
+
+def take_action():
+  global dungeon_level, player_amulet
   if dungeon[player_y][player_x] == '%':
     dungeon_level = dungeon_level+1 if not player_amulet else dungeon_level-1
     if not dungeon_level:
@@ -216,3 +224,4 @@ make_level()
 while True:
   render_level()
   read_keys()
+  take_action()
