@@ -22,29 +22,36 @@ player_armor = 1
 player_amulet = 0
 
 def battle():
-  global player_hp
+  global player_hp, player_weapon, player_armor
   monster = dungeon[player_y][player_x]
   monster_hp = (ord(monster) - ord('A') + 1)*2
   monster_damage = monster_hp
   while player_hp > 0:
     damage = randrange(player_weapon+1)
     monster_hp -= damage
-    screen.addstr(0, 0, f'You deal {damage} points of damage to {monster}({monster_hp})'); screen.clrtoeol()
+    screen.addstr(0, 0, f'You hit {monster}({monster_hp}) by {damage} point(s), press "f" to fight'); screen.clrtoeol()
     screen.refresh()
     if monster_hp <= 0:
       dungeon[player_y][player_x] = '.'
-      screen.addstr(0, 0, f'You killed {monster}({monster_hp})'); screen.clrtoeol()
+      screen.addstr(0, 0, f'You killed {monster}, press "f" to finish fight'); screen.clrtoeol()
       screen.refresh()
+      player_weapon += int(monster_damage/2)
+      player_armor += int(monster_damage/2)
     ch = -1
-    while ch == -1: ch = screen.getch()
+    while ch == -1:
+      ch = screen.getch()
+      if ch != ord('f'): ch = -1
     if monster_hp <= 0: break
     damage = max(0, randrange(monster_damage)*2 - player_armor)
     player_hp -= damage
     render_level()
-    screen.addstr(0, 0, f'{monster} deals {damage} points of damage to you'); screen.clrtoeol()
+    screen.addstr(0, 0, f'{monster}({monster_hp}) hits you by {damage} point(s), press "f" to fight, "e" to escape'); screen.clrtoeol()
     screen.refresh()
     ch = -1
-    while ch == -1: ch = screen.getch()
+    while ch == -1:
+      ch = screen.getch()
+      if ch == ord('e'): return
+      elif ch != ord('f'): ch = -1
 
 def get_floor_tiles():
   floor_tiles = []
