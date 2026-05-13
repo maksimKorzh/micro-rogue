@@ -15,10 +15,36 @@ monsters = string.ascii_uppercase
 
 player_x = 0
 player_y = 0
+player_steps = 0
 player_hp = 12
 player_weapon = 1
 player_armor = 1
 player_amulet = 0
+
+def battle():
+  global player_hp
+  monster = dungeon[player_y][player_x]
+  monster_hp = (ord(monster) - ord('A') + 1)*2
+  monster_damage = monster_hp
+  while player_hp > 0:
+    damage = randrange(player_weapon+1)
+    monster_hp -= damage
+    screen.addstr(0, 0, f'You deal {damage} points of damage to {monster}({monster_hp})'); screen.clrtoeol()
+    screen.refresh()
+    if monster_hp <= 0:
+      dungeon[player_y][player_x] = '.'
+      screen.addstr(0, 0, f'You killed {monster}({monster_hp})'); screen.clrtoeol()
+      screen.refresh()
+    ch = -1
+    while ch == -1: ch = screen.getch()
+    if monster_hp <= 0: break
+    damage = max(0, randrange(monster_damage)*2 - player_armor)
+    player_hp -= damage
+    render_level()
+    screen.addstr(0, 0, f'{monster} deals {damage} points of damage to you'); screen.clrtoeol()
+    screen.refresh()
+    ch = -1
+    while ch == -1: ch = screen.getch()
 
 def get_floor_tiles():
   floor_tiles = []
@@ -183,9 +209,12 @@ def render_level():
   screen.refresh()
 
 def read_keys():
-  global player_x, player_y
+  global player_x, player_y, player_steps, player_hp
   ch = -1
-  while (ch == -1): ch = screen.getch()
+  while ch == -1: ch = screen.getch()
+  if ch in [ord('h'), ord('j'), ord('k'), ord('l')]:
+    player_steps += 1
+    if not player_steps % 128: player_hp -= 1
   if ch == ord('h'):
     if dungeon[player_y][player_x-1] not in '-| ':
       player_x -= 1
@@ -215,9 +244,12 @@ def take_action():
   elif dungeon[player_y][player_x] == ')': player_weapon += 1
   elif dungeon[player_y][player_x] == ']': player_armor += 1
   elif dungeon[player_y][player_x] == '*': player_hp += 6
-  elif dungeon[player_y][player_x] in monsters: pass
+  elif dungeon[player_y][player_x] in monsters: battle()
   if dungeon[player_y][player_x] in '!)]*': dungeon[player_y][player_x] = '.'
-  
+  if player_hp <= 0:
+    curses.endwin()
+    print('You died!')
+    sys.exit()  
 
 #while True:
 #  make_level()
