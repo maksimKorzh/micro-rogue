@@ -92,14 +92,12 @@ def make_level():
   doors_y = []
   for r in range(3):
     for c in range(3):
-      w = randrange(6, 20)
+      w = randrange(10, 20)
       h = randrange(5, 7)
       x = randrange(c*27, c*27+(26-w))
       y = randrange(r*8, r*8+(7-h))
-      px = randrange(x+1, x+w-1)
-      py = randrange(y+1, y+h-1)
-      doors_x.append([x+w-1, py])
-      doors_y.append([px, y+h-1])
+      doors_x.append([x+w-1, y+int(h/2)])
+      doors_y.append([x+int(w/2), y+h-1])
       make_room(x, y, w, h)
   
   for door in doors_x: make_horizontal_passage(door[0], door[1])
@@ -145,7 +143,12 @@ def read_keys():
     curses.endwin()
     sys.exit()
 
-
+#while True:
+#  make_level()
+#  print_level()
+#  input()
+#
+#sys.exit()
 
 screen = curses.initscr()
 screen.nodelay(1)
@@ -156,8 +159,8 @@ curses.start_color()
 curses.use_default_colors()
 
 
-
 make_level()
+#print_level()
 
 while True:
   render_level()
