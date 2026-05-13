@@ -19,6 +19,7 @@ player_steps = 0
 player_hp = 12
 player_weapon = 1
 player_armor = 1
+player_food = 1200
 player_amulet = 0
 
 def battle():
@@ -35,8 +36,8 @@ def battle():
       dungeon[player_y][player_x] = '.'
       screen.addstr(0, 0, f'You killed {monster}, press "f" to finish fight'); screen.clrtoeol()
       screen.refresh()
-      player_weapon += int(monster_damage/2)
-      player_armor += int(monster_damage/2)
+      player_weapon += 1
+      player_armor += 1
     ch = -1
     while ch == -1:
       ch = screen.getch()
@@ -89,7 +90,7 @@ def populate_dungeon():
     monster = choice(monsters[dungeon_level-1: dungeon_level+3])
     monster_pos = choice(get_blocking_tiles())
     dungeon[monster_pos[1]][monster_pos[0]] = monster
-  items = randrange(2, 6)
+  items = randrange(0, 2)
   for i in range(items):
     weapon_pos = choice(get_floor_tiles())
     dungeon[weapon_pos[1]][weapon_pos[0]] = ')'
@@ -207,7 +208,7 @@ def render_level():
       else: screen.addch(row, col, ' ')
     screen.clrtoeol()
     screen.addch('\n')
-  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Weapon: {player_weapon}  Armor: {player_armor}  Amulet Of Yendor: {player_amulet}')
+  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Weapon: {player_weapon}  Armor: {player_armor}  Amulet Of Yendor: {player_amulet}       Food: {player_food}')
   screen.clrtoeol()
   curses.curs_set(0)
   screen.addch(player_y, player_x, '@')
@@ -216,12 +217,13 @@ def render_level():
   screen.refresh()
 
 def read_keys():
-  global player_x, player_y, player_steps, player_hp
+  global player_x, player_y, player_steps, player_hp, player_food
   ch = -1
   while ch == -1: ch = screen.getch()
   if ch in [ord('h'), ord('j'), ord('k'), ord('l')]:
     player_steps += 1
-    if not player_steps % 128: player_hp -= 1
+    if not player_steps % (30-dungeon_level): player_hp += 1
+    player_food -= 1
   if ch == ord('h'):
     if dungeon[player_y][player_x-1] not in '-| ':
       player_x -= 1
@@ -234,12 +236,29 @@ def read_keys():
   elif ch == ord('l'):
     if dungeon[player_y][player_x+1] not in '-| ':
       player_x += 1
+  if dungeon[player_y][player_x] != '+':
+    if ch == ord('y'):
+      if dungeon[player_y-1][player_x-1] not in '-|+ ':
+        player_x -= 1
+        player_y -= 1
+    elif ch == ord('b'):
+      if dungeon[player_y+1][player_x-1] not in '-|+ ':
+        player_x -= 1
+        player_y += 1
+    elif ch == ord('u'):
+      if dungeon[player_y-1][player_x+1] not in '-|+ ':
+        player_x += 1
+        player_y -= 1
+    elif ch == ord('n'):
+      if dungeon[player_y+1][player_x+1] not in '-|+ ':
+        player_x += 1
+        player_y += 1
   elif ch == ord('q'):
     curses.endwin()
     sys.exit()
 
 def take_action():
-  global dungeon_level, player_amulet, player_weapon, player_armor, player_hp
+  global dungeon_level, player_amulet, player_weapon, player_armor, player_food
   if dungeon[player_y][player_x] == '%':
     dungeon_level = dungeon_level+1 if not player_amulet else dungeon_level-1
     if not dungeon_level:
@@ -250,10 +269,10 @@ def take_action():
   elif dungeon[player_y][player_x] == '!': player_amulet = 1
   elif dungeon[player_y][player_x] == ')': player_weapon += 1
   elif dungeon[player_y][player_x] == ']': player_armor += 1
-  elif dungeon[player_y][player_x] == '*': player_hp += 6
+  elif dungeon[player_y][player_x] == '*': player_food += int(randrange(100, len(get_floor_tiles()))/2)
   elif dungeon[player_y][player_x] in monsters: battle()
   if dungeon[player_y][player_x] in '!)]*': dungeon[player_y][player_x] = '.'
-  if player_hp <= 0:
+  if player_hp <= 0 or player_food <= 0:
     curses.endwin()
     print('You died!')
     sys.exit()  
