@@ -36,8 +36,8 @@ def battle():
       dungeon[player_y][player_x] = '.'
       screen.addstr(0, 0, f'You killed {monster}, press "f" to finish fight'); screen.clrtoeol()
       screen.refresh()
-      player_weapon += 1
-      player_armor += 1
+      if player_weapon < dungeon_level+3: player_weapon += randrange(0, 2)
+      if player_armor < dungeon_level+3: player_armor += randrange(0, 2)
     ch = -1
     while ch == -1:
       ch = screen.getch()
@@ -253,7 +253,7 @@ def read_keys():
       if dungeon[player_y+1][player_x+1] not in '-|+ ':
         player_x += 1
         player_y += 1
-  elif ch == ord('q'):
+  if ch == ord('q'):
     curses.endwin()
     sys.exit()
 
