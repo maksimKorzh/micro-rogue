@@ -1,4 +1,5 @@
 import sys
+import string
 import curses
 from random import randrange, choice
 
@@ -9,10 +10,11 @@ AMULET_LEVEL = 3
 
 dungeon = [[' ']*COLS for i in range(ROWS)]
 dungeon_level = 1
+monsters = string.ascii_uppercase
 
 player_x = 0
 player_y = 0
-player_amulet = False
+player_amulet = 0
 
 def get_floor_tiles():
   floor_tiles = []
@@ -22,16 +24,43 @@ def get_floor_tiles():
         floor_tiles.append([col, row])
   return floor_tiles
 
+def get_blocking_tiles():
+  floor_tiles = []
+  for row in range(ROWS):
+    for col in range(COLS):
+      if dungeon[row][col] == '.':
+        try:
+          if dungeon[row+1][col] == '+' or \
+             dungeon[row-1][col] == '+' or \
+             dungeon[row][col+1] == '+' or \
+             dungeon[row][col-1] == '+':
+            floor_tiles.append([col, row])
+        except: pass
+  return floor_tiles
+
 def populate_dungeon():
   global player_x, player_y
-  player_pos = choice(get_floor_tiles())
-  player_x = player_pos[0]
-  player_y = player_pos[1]
   stairs_pos = choice(get_floor_tiles())
   dungeon[stairs_pos[1]][stairs_pos[0]] = '%'
+  monster_num = randrange(6, 12)
+  for i in range(monster_num):
+    monster = choice(monsters[dungeon_level-1: dungeon_level+3])
+    monster_pos = choice(get_floor_tiles())
+    dungeon[monster_pos[1]][monster_pos[0]] = monster
+    
+  monster_block = randrange(2, 5)
+  for i in range(monster_num):
+    monster = choice(monsters[dungeon_level-1: dungeon_level+3])
+    monster_pos = choice(get_blocking_tiles())
+    dungeon[monster_pos[1]][monster_pos[0]] = monster
+    
   if dungeon_level == AMULET_LEVEL:
     amulet_pos = choice(get_floor_tiles())
     dungeon[amulet_pos[1]][amulet_pos[0]] = '!'
+  
+  player_pos = choice(get_floor_tiles())
+  player_x = player_pos[0]
+  player_y = player_pos[1]
 
 def make_room(x, y, w, h):
   for row in range(y, y + h):
@@ -161,11 +190,11 @@ def read_keys():
     dungeon_level = dungeon_level+1 if not player_amulet else dungeon_level-1
     if not dungeon_level:
       curses.endwin()
-      print('You won')
+      print('You won!')
       sys.exit()
     else: make_level()
   elif dungeon[player_y][player_x] == '!':
-    player_amulet = True
+    player_amulet = 1
     dungeon[player_y][player_x] = '.'
 
 #while True:
