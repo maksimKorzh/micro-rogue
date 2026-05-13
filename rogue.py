@@ -15,6 +15,9 @@ monsters = string.ascii_uppercase
 
 player_x = 0
 player_y = 0
+player_hp = 12
+player_weapon = 1
+player_armor = 1
 player_amulet = 0
 
 def get_floor_tiles():
@@ -53,6 +56,16 @@ def populate_dungeon():
     monster = choice(monsters[dungeon_level-1: dungeon_level+3])
     monster_pos = choice(get_blocking_tiles())
     dungeon[monster_pos[1]][monster_pos[0]] = monster
+  items = randrange(2, 6)
+  for i in range(items):
+    weapon_pos = choice(get_floor_tiles())
+    dungeon[weapon_pos[1]][weapon_pos[0]] = ')'
+  for i in range(items):
+    armor_pos = choice(get_floor_tiles())
+    dungeon[armor_pos[1]][armor_pos[0]] = ']'
+  for i in range(items):
+    food_pos = choice(get_floor_tiles())
+    dungeon[food_pos[1]][food_pos[0]] = '*'
   if dungeon_level == AMULET_LEVEL:
     amulet_pos = choice(get_floor_tiles())
     dungeon[amulet_pos[1]][amulet_pos[0]] = '!'
@@ -161,7 +174,7 @@ def render_level():
       else: screen.addch(row, col, ' ')
     screen.clrtoeol()
     screen.addch('\n')
-  screen.addstr(23, 0, f'Level: {dungeon_level}  Amulet Of Yendor: {player_amulet}')
+  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Weapon: {player_weapon}  Armor: {player_armor}  Amulet Of Yendor: {player_amulet}')
   screen.clrtoeol()
   curses.curs_set(0)
   screen.addch(player_y, player_x, '@')
@@ -190,7 +203,7 @@ def read_keys():
     sys.exit()
 
 def take_action():
-  global dungeon_level, player_amulet
+  global dungeon_level, player_amulet, player_weapon, player_armor, player_hp
   if dungeon[player_y][player_x] == '%':
     dungeon_level = dungeon_level+1 if not player_amulet else dungeon_level-1
     if not dungeon_level:
@@ -198,9 +211,13 @@ def take_action():
       print('You won!')
       sys.exit()
     else: make_level()
-  elif dungeon[player_y][player_x] == '!':
-    player_amulet = 1
-    dungeon[player_y][player_x] = '.'
+  elif dungeon[player_y][player_x] == '!': player_amulet = 1
+  elif dungeon[player_y][player_x] == ')': player_weapon += 1
+  elif dungeon[player_y][player_x] == ']': player_armor += 1
+  elif dungeon[player_y][player_x] == '*': player_hp += 6
+  elif dungeon[player_y][player_x] in monsters: pass
+  if dungeon[player_y][player_x] in '!)]*': dungeon[player_y][player_x] = '.'
+  
 
 #while True:
 #  make_level()
