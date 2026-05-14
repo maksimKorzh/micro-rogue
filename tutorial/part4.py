@@ -1,10 +1,12 @@
 # Packages
+import sys
+import curses
 import string
 from random import randrange, choice
 
 # Constants
 ROWS = 23
-COLS = 79
+COLS = 80
 AMULET_LEVEL = 1
 
 # Variables
@@ -13,6 +15,12 @@ dungeon_level = 1
 monsters = string.ascii_uppercase
 player_x = 0
 player_y = 0
+player_hp = 12
+player_food = 1200
+player_steps = 0
+player_armor = 1
+player_weapon = 1
+player_amulet = 0
 
 # Functions
 
@@ -42,6 +50,9 @@ def get_blocking_tiles():
 
 # Fill the dungeon with stairs, items and monsters
 def fill_dungeon():
+  # Globals to change
+  global player_x, player_y
+  
   # Place stairs
   stair_pos = choice(get_floor_tiles())
   dungeon[stair_pos[1]][stair_pos[0]] = '%'
@@ -179,13 +190,103 @@ def make_level():
   # Fill the dungeon
   fill_dungeon()
 
-def print_level():
-  for row in dungeon:
-    for col in row:
-      print(col, end='')
-    print()
+# Render level to screen
+def render_level():
+  # Avoid glitches
+  curses.curs_set(0)
+  screen.move(0, 0)
+  
+  # Render dungeon
+  for row in range(ROWS):
+    for col in range(COLS):
+      screen.addch(row, col, dungeon[row][col])
+    screen.clrtoeol()
+  
+  # Render status line
+  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor: {player_amulet}       Food: {player_food}')
+  screen.clrtoeol()
+  
+  # Render player
+  screen.addch(player_y, player_x, '@')
+  screen.move(player_y, player_x)
+  
+  # Update screen
+  curses.curs_set(1)
+  screen.refresh()
+
+# Take user input
+def read_key():
+  # Globals to change
+  global player_x, player_y, player_hp, player_steps, player_food
+
+  # Read key from keyboard
+  ch = -1
+  while ch == -1: ch = screen.getch()
+
+  # HP restore logic
+  if ch in [
+    ord('h'), ord('j'), ord('k'), ord('l'),
+    ord('y'), ord('u'), ord('b'), ord('n')
+  ]:
+    player_steps += 1
+    if not player_steps % (30-dungeon_level): player_hp += 1
+    player_food -= 1
+    
+  # Orthogonal motion control
+  if ch == ord('h'):
+    if dungeon[player_y][player_x-1] not in '-| ':
+      player_x -= 1
+  elif ch == ord('j'):
+    if dungeon[player_y+1][player_x] not in '-| ':
+      player_y += 1
+  elif ch == ord('k'):
+    if dungeon[player_y-1][player_x] not in '-| ':
+      player_y -= 1
+  elif ch == ord('l'):
+    if dungeon[player_y][player_x+1] not in '-| ':
+      player_x += 1
+  
+  # Diagonal motion control
+  if dungeon[player_y][player_x] != '+':
+    if ch == ord('y'):
+      if dungeon[player_y-1][player_x-1] not in '-|+ ':
+        player_x -= 1
+        player_y -= 1
+    elif ch == ord('b'):
+      if dungeon[player_y+1][player_x-1] not in '-|+ ':
+        player_x -=1
+        player_y += 1
+    if ch == ord('u'):
+      if dungeon[player_y-1][player_x+1] not in '-|+ ':
+        player_x += 1
+        player_y -= 1
+    if ch == ord('n'):
+      if dungeon[player_y+1][player_x+1] not in '-|+ ':
+        player_x += 1
+        player_y += 1
+
+  # Escape condition
+  if ch == ord('q'):
+    curses.endwin()
+    sys.exit()
+
+
+
+
+
+
+# Init curses
+screen = curses.initscr()
+screen.nodelay(1)
+curses.noecho()
+curses.raw()
+screen.keypad(1)
+curses.start_color()
+curses.use_default_colors()
+
+
+make_level()
 
 while True:
-  make_level()
-  print_level()
-  input()
+  render_level()
+  read_key()
