@@ -198,7 +198,8 @@ def print_level():
     print()
 
 def render_level():
-  screen.move(0, 0)
+  curses.curs_set(0)
+  #screen.move(0, 0)
   for row in range(ROWS):
     for col in range(COLS):
       if [col, row] in visited: screen.addch(row, col, dungeon[row][col])
@@ -210,7 +211,6 @@ def render_level():
     screen.addch('\n')
   screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Weapon: {player_weapon}  Armor: {player_armor}  Amulet Of Yendor: {player_amulet}       Food: {player_food}')
   screen.clrtoeol()
-  curses.curs_set(0)
   screen.addch(player_y, player_x, '@')
   screen.move(player_y, player_x)
   curses.curs_set(1)
