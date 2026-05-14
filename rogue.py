@@ -184,7 +184,7 @@ def make_vertical_passage(x, y):
 # Create new level
 def make_level():
   # Globals to change
-  global visitied_tiles
+  global visited_tiles  # BUG FIX
   
   # Clear visited tiles
   visited_tiles = []
@@ -230,7 +230,8 @@ def render_level():
       elif row in range(player_y-1, player_y+2) and col in range(player_x-1, player_x+2):
         screen.addch(row, col, dungeon[row][col])
         visited_tiles.append([col, row])
-  
+      else: screen.addch(row, col, ' ') # BUG FIX!
+
   # Render status line
   screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor: {player_amulet}       Food: {player_food}')
   screen.clrtoeol()
@@ -368,7 +369,7 @@ def take_action():
   elif dungeon[player_y][player_x] == '*': player_food += int(randrange(100, len(get_floor_tiles()))/2)
   
   # Fight monster
-  if dungeon[player_y][player_x] in monsters: battle()
+  if dungeon[player_y][player_x] in monsters: pass#battle()
   
   # Remove picked item
   if dungeon[player_y][player_x] in '!)]*': dungeon[player_y][player_x] = '.'
