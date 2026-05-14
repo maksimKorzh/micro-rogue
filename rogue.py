@@ -27,6 +27,7 @@ AMULET_LEVEL = 3
 
 dungeon = [[' ']*COLS for i in range(ROWS)]
 visited_tiles = []
+revealed_traps = []
 dungeon_level = 1
 monsters = string.ascii_uppercase
 player_x = 0
@@ -102,6 +103,12 @@ def fill_dungeon():
     monster = choice(monsters[dungeon_level-1: dungeon_level+3])
     monster_pos = choice(get_blocking_tiles())
     dungeon[monster_pos[1]][monster_pos[0]] = monster
+
+  # Place traps
+  traps = randrange(0, int(dungeon_level/2)+1)
+  for i in range(traps):
+    trap_pos = choice(get_floor_tiles())
+    dungeon[trap_pos[1]][trap_pos[0]] = '^'
 
   # Place Amulet of Yendor
   if dungeon_level == AMULET_LEVEL:
@@ -184,10 +191,13 @@ def make_vertical_passage(x, y):
 # Create new level
 def make_level():
   # Globals to change
-  global visited_tiles  # BUG FIX
+  global visited_tiles, revealed_traps
   
   # Clear visited tiles
   visited_tiles = []
+  
+  # Clear revealed traps
+  revealed_traps = []
 
   # Clear dungeon
   for row in range(ROWS):
@@ -226,11 +236,15 @@ def render_level():
   # Render dungeon
   for row in range(ROWS):
     for col in range(COLS):
-      if [col, row] in visited_tiles: screen.addch(row, col, dungeon[row][col])
+      if [col, row] in visited_tiles:
+        if dungeon[row][col] == '^':
+          if [col, row] in revealed_traps: screen.addch(row, col, '^')
+          else: screen.addch(row, col, '.')
+        else: screen.addch(row, col, dungeon[row][col])
       elif row in range(player_y-1, player_y+2) and col in range(player_x-1, player_x+2):
         screen.addch(row, col, dungeon[row][col])
         visited_tiles.append([col, row])
-      else: screen.addch(row, col, ' ') # BUG FIX!
+      else: screen.addch(row, col, ' ')
 
   # Render status line
   screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor: {player_amulet}       Food: {player_food}')
@@ -353,7 +367,7 @@ def battle():
 # Interact with the dungeon
 def take_action():
   # Globals to change
-  global dungeon_level, player_amulet, player_weapon, player_armor, player_food
+  global dungeon_level, player_amulet, player_weapon, player_armor, player_food, player_hp, revealed_traps
   
   # Change dungeon level
   if dungeon[player_y][player_x] == '%':
@@ -374,6 +388,20 @@ def take_action():
   # Remove picked item
   if dungeon[player_y][player_x] in '!)]*': dungeon[player_y][player_x] = '.'
   
+  # Got into trap
+  if dungeon[player_y][player_x] == '^':
+    damage = randrange(5, 10+int(dungeon_level/2))
+    player_hp -= damage
+    revealed_traps.append([player_x, player_y])
+    screen.addstr(0, 0, f'You got into trap! Your HP decreases by {damage} points, press any key to continue')
+    screen.clrtoeol()
+    screen.refresh()
+    
+    # Wait for user input
+    ch = -1
+    while ch == -1:
+      ch = screen.getch()
+
   # Death condition
   if player_hp <= 0 or player_food <= 0:
     curses.endwin()
