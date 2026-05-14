@@ -369,7 +369,7 @@ def take_action():
   elif dungeon[player_y][player_x] == '*': player_food += int(randrange(100, len(get_floor_tiles()))/2)
   
   # Fight monster
-  if dungeon[player_y][player_x] in monsters: pass#battle()
+  if dungeon[player_y][player_x] in monsters: battle()
   
   # Remove picked item
   if dungeon[player_y][player_x] in '!)]*': dungeon[player_y][player_x] = '.'
