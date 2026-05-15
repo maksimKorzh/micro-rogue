@@ -88,7 +88,7 @@ def fill_dungeon():
   for i in range(armors):
     armor_pos = choice(get_floor_tiles())
     dungeon[armor_pos[1]][armor_pos[0]] = ']'
-  foods = randrange(0,2)
+  foods = randrange(1,4)
   for i in range(foods):
     food_pos = choice(get_floor_tiles())
     dungeon[food_pos[1]][food_pos[0]] = '*'
