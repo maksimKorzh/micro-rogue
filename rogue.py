@@ -17,7 +17,6 @@ from random import randrange, choice
 
 ROWS = 23
 COLS = 80
-AMULET_LEVEL = 3
 
 #########################
 #
@@ -25,10 +24,12 @@ AMULET_LEVEL = 3
 #
 #########################
 
+amulet_level = 26
 dungeon = [[' ']*COLS for i in range(ROWS)]
 visited_tiles = []
 revealed_traps = []
 dungeon_level = 1
+dark_rooms = False
 monsters = string.ascii_uppercase
 player_x = 0
 player_y = 0
@@ -111,7 +112,7 @@ def fill_dungeon():
     dungeon[trap_pos[1]][trap_pos[0]] = '^'
 
   # Place Amulet of Yendor
-  if dungeon_level == AMULET_LEVEL:
+  if dungeon_level == amulet_level:
     amulet_pos = choice(get_floor_tiles())
     dungeon[amulet_pos[1]][amulet_pos[0]] = '!'
   
@@ -236,18 +237,24 @@ def render_level():
   # Render dungeon
   for row in range(ROWS):
     for col in range(COLS):
-      if [col, row] in visited_tiles:
+      if dark_rooms:
+        if [col, row] in visited_tiles:
+          if dungeon[row][col] == '^':
+            if [col, row] in revealed_traps: screen.addch(row, col, '^')
+            else: screen.addch(row, col, '.')
+          else: screen.addch(row, col, dungeon[row][col])
+        elif row in range(player_y-1, player_y+2) and col in range(player_x-1, player_x+2):
+          screen.addch(row, col, dungeon[row][col])
+          visited_tiles.append([col, row])
+        else: screen.addch(row, col, ' ')
+      else:
         if dungeon[row][col] == '^':
           if [col, row] in revealed_traps: screen.addch(row, col, '^')
           else: screen.addch(row, col, '.')
         else: screen.addch(row, col, dungeon[row][col])
-      elif row in range(player_y-1, player_y+2) and col in range(player_x-1, player_x+2):
-        screen.addch(row, col, dungeon[row][col])
-        visited_tiles.append([col, row])
-      else: screen.addch(row, col, ' ')
 
   # Render status line
-  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor: {player_amulet}       Food: {player_food}')
+  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor({amulet_level}): {player_amulet}       Food: {player_food}')
   screen.clrtoeol()
   
   # Render player
@@ -267,10 +274,10 @@ def read_key():
   ch = -1
   while ch == -1: ch = screen.getch()
 
-  # HP restore logic
+  # HP restore logic, food consumption
   if ch in [
     ord('h'), ord('j'), ord('k'), ord('l'),
-    ord('y'), ord('u'), ord('b'), ord('n')
+    ord('y'), ord('u'), ord('b'), ord('n'),
   ]:
     player_steps += 1
     if not player_steps % (30-dungeon_level): player_hp += 1
@@ -367,7 +374,8 @@ def battle():
 # Interact with the dungeon
 def take_action():
   # Globals to change
-  global dungeon_level, player_amulet, player_weapon, player_armor, player_food, player_hp, revealed_traps
+  global player_amulet, player_weapon, player_armor, player_food, player_hp
+  global dungeon_level, revealed_traps, dark_rooms
   
   # Change dungeon level
   if dungeon[player_y][player_x] == '%':
@@ -376,7 +384,10 @@ def take_action():
       curses.endwin()
       print('You won!')
       sys.exit()
-    else: make_level()
+    else:
+      if dungeon_level > int(amulet_level/2): dark_rooms = True
+      else: dark_rooms = False
+      make_level()
   elif dungeon[player_y][player_x] == '!': player_amulet = 1
   elif dungeon[player_y][player_x] == ')': player_weapon += 1
   elif dungeon[player_y][player_x] == ']': player_armor += 1
@@ -414,6 +425,17 @@ def take_action():
 #          MAIN
 #
 #########################
+
+# Set up difficulty
+try:
+  amulet_level = int(input('Amulet Of Yendor Level (1-26) > '))
+  if amulet_level not in range(1,27):
+    amulet_level = 26
+    print('Amulet Of Yendor is placed on level 26')
+    input()
+except:
+  print('Amulet Of Yendor is placed on level 26')
+  input()
 
 # Init curses
 screen = curses.initscr()
