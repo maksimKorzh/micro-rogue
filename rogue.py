@@ -346,8 +346,8 @@ def battle():
       screen.addstr(0, 0, f'You killed {monster}, press "f" to finish the fight')
       screen.clrtoeol()
       screen.refresh()
-      if player_weapon < dungeon_level+3: player_weapon += randrange(0, 2)
-      if player_armor < dungeon_level+3: player_armor += randrange(0, 2)
+      if player_weapon < dungeon_level+5: player_weapon += randrange(0, 2) + monsters.index(monster)
+      if player_armor < dungeon_level+5: player_armor += randrange(0, 2) + monsters.index(monster)
     
     # Wait for user input
     ch = -1
