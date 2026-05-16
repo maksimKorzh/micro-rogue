@@ -80,11 +80,11 @@ def fill_dungeon():
   dungeon[stair_pos[1]][stair_pos[0]] = '%'
   
   # Place items
-  weapons = randrange(0, 3)
+  weapons = randrange(0, 2)
   for i in range(weapons):
     weapon_pos = choice(get_floor_tiles())
     dungeon[weapon_pos[1]][weapon_pos[0]] = ')'
-  armors = randrange(0, 3)
+  armors = randrange(0, 2)
   for i in range(armors):
     armor_pos = choice(get_floor_tiles())
     dungeon[armor_pos[1]][armor_pos[0]] = ']'
@@ -346,8 +346,8 @@ def battle():
       screen.addstr(0, 0, f'You killed {monster}, press "f" to finish the fight')
       screen.clrtoeol()
       screen.refresh()
-      if player_weapon < dungeon_level+5: player_weapon += randrange(0, 2) + monsters.index(monster)
-      if player_armor < dungeon_level+5: player_armor += randrange(0, 2) + monsters.index(monster)
+      if player_weapon < dungeon_level+10: player_weapon += randrange(0, 2) + monsters.index(monster)
+      if player_armor < dungeon_level+10: player_armor += randrange(0, 2) + monsters.index(monster)
     
     # Wait for user input
     ch = -1
