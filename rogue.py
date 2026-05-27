@@ -5,6 +5,7 @@
 #########################
 
 import sys
+import json
 import curses
 import string
 from random import randrange, choice
@@ -325,6 +326,11 @@ def read_key():
   if ch == ord('q'):
     curses.endwin()
     sys.exit()
+  elif ch == ord('S'):
+    save()
+    curses.endwin()
+    print('Game saved to "rogue.json"')
+    sys.exit()
 
 # Figth monsters
 def battle():
@@ -424,6 +430,49 @@ def take_action():
     print('You died!')
     sys.exit()
   
+# Save game
+def save():
+  with open('rogue.json', 'w') as f:
+    f.write(json.dumps({
+      'amulet_level': amulet_level,
+      'dungeon': json.dumps(dungeon),
+      'visited_tiles': json.dumps(visited_tiles),
+      'revealed_traps': json.dumps(revealed_traps),
+      'dungeon_level': dungeon_level,
+      'dark_rooms': dark_rooms,
+      'player_x': player_x,
+      'player_y': player_y,
+      'player_hp': player_hp,
+      'player_food': player_food,
+      'player_steps': player_steps,
+      'player_armor': player_armor,
+      'player_weapon': player_weapon,
+      'player_amulet': player_amulet
+    }, indent=2))
+
+# Load game
+def load():
+  global amulet_level, dungeon, visited_tiles, revealed_traps, dungeon_level, dark_rooms
+  global player_x, player_y, player_hp, player_food, player_steps
+  global player_armor, player_weapon, player_amulet
+  try:
+    with open('rogue.json') as f:
+      game = json.loads(f.read())
+      amulet_level = game['amulet_level']
+      dungeon = json.loads(game['dungeon'])
+      visited_tiles = json.loads(game['visited_tiles'])
+      revealed_traps = json.loads(game['revealed_traps'])
+      dungeon_level = game['dungeon_level']
+      dark_rooms = game['dark_rooms']
+      player_x = game['player_x']
+      player_y = game['player_y']
+      player_hp = game['player_hp']
+      player_food = game['player_food']
+      player_steps = game['player_food']
+      player_armor = game['player_armor']
+      player_weapon = game['player_weapon']
+      player_amulet = game['player_amulet']
+  except: raise Exception
 
 #########################
 #
@@ -431,16 +480,23 @@ def take_action():
 #
 #########################
 
-# Set up difficulty
+# Load saved game or set up difficulty
 try:
-  amulet_level = int(input('Amulet Of Yendor Level (1-26) > '))
-  if amulet_level not in range(1,27):
-    amulet_level = 26
+  load()
+  print('Loaded saved game')
+except:
+  try:
+    amulet_level = int(input('Amulet Of Yendor Level (1-26) > '))
+    if amulet_level not in range(1,27):
+      amulet_level = 26
+      print('Amulet Of Yendor is placed on level 26')
+      input()
+  except:
     print('Amulet Of Yendor is placed on level 26')
     input()
-except:
-  print('Amulet Of Yendor is placed on level 26')
-  input()
+
+  # Make first level
+  make_level()
 
 # Init curses
 screen = curses.initscr()
@@ -451,8 +507,6 @@ screen.keypad(1)
 curses.start_color()
 curses.use_default_colors()
 
-# Make first level
-make_level()
 
 # Game loop
 while True:
