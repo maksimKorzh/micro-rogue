@@ -14,3 +14,4 @@ Minimalist roguelike inspired by Oscar Toledo's Boot Rogue (510 bytes)
     h, j, k, l - orthogonal movements
     y, b, u, n - diagonal movements
           r, e - fight monster / escape fight
+             w - wait 50 turns (to regain HP)

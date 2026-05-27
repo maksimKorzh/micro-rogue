@@ -296,7 +296,12 @@ def read_key():
   elif ch == ord('l'):
     if dungeon[player_y][player_x+1] not in '-| ':
       player_x += 1
-  
+  elif ch == ord('w'):
+    for i in range(50):
+      player_steps += 1
+      if not player_steps % (30-dungeon_level): player_hp += 1
+      player_food -= 1
+
   # Diagonal motion control
   if dungeon[player_y][player_x] != '+':
     if ch == ord('y'):
