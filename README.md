@@ -11,8 +11,8 @@ Minimalist roguelike inspired by Oscar Toledo's Boot Rogue (510 bytes)
 
 # Controls
 
-    h, j, k, l - orthogonal movements
-    y, b, u, n - diagonal movements
+    h, j, k, l - orthogonal movements (upper case to run)
+    y, b, u, n - diagonal movements (upper case to run)
           r, e - fight monster / escape fight
              w - wait 50 turns (to regain HP)
              S - save game (game would be loaded from "rogue.json" if available)

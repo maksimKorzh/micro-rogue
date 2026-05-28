@@ -268,13 +268,34 @@ def render_level():
 
 # Take user input
 def read_key():
-  # Globals to change
-  global player_x, player_y, player_hp, player_steps, player_food
-
   # Read key from keyboard
   ch = -1
   while ch == -1: ch = screen.getch()
+  
+  # Run
+  if ch == ord('H'):
+    while dungeon[player_y][player_x-1] in '.#': move(ord('h'))
+  elif ch == ord('J'):
+    while dungeon[player_y+1][player_x] in '.#': move(ord('j'))
+  elif ch == ord('K'):
+    while dungeon[player_y-1][player_x] in '.#': move(ord('k'))
+  elif ch == ord('L'):
+    while dungeon[player_y][player_x+1] in '.#': move(ord('l'))
+  elif ch == ord('Y'):
+    while dungeon[player_y-1][player_x-1] in '.#': move(ord('y'))
+  elif ch == ord('U'):
+    while dungeon[player_y-1][player_x+1] in '.#': move(ord('u'))
+  elif ch == ord('B'):
+    while dungeon[player_y+1][player_x-1] in '.#': move(ord('b'))
+  elif ch == ord('N'):
+    while dungeon[player_y+1][player_x+1] in '.#': move(ord('n'))
+  else: move(ch)
 
+# Move rogue
+def move(ch):
+  # Globals to change
+  global player_x, player_y, player_hp, player_steps, player_food
+  
   # HP restore logic, food consumption
   if ch in [
     ord('h'), ord('j'), ord('k'), ord('l'),
