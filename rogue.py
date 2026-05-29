@@ -273,48 +273,23 @@ def read_key():
   ch = -1
   while ch == -1: ch = screen.getch()
   
-  # Run
-  if ch == ord('H'):
-    while dungeon[player_y][player_x-1] in '.#^':
-      move(ord('h'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('J'):
-    while dungeon[player_y+1][player_x] in '.#^':
-      render_level()
-      move(ord('j'))
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('K'):
-    while dungeon[player_y-1][player_x] in '.#^':
-      move(ord('k'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('L'):
-    while dungeon[player_y][player_x+1] in '.#^':
-      move(ord('l'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('Y'):
-    while dungeon[player_y-1][player_x-1] in '.#^':
-      move(ord('y'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('U'):
-    while dungeon[player_y-1][player_x+1] in '.#^':
-      move(ord('u'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('B'):
-    while dungeon[player_y+1][player_x-1] in '.#^':
-      move(ord('b'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
-  elif ch == ord('N'):
-    while dungeon[player_y+1][player_x+1] in '.#^':
-      move(ord('n'))
-      render_level()
-      if dungeon[player_y][player_x] == '^': break
+  # Run or move
+  if ch == ord('H'): run(0, -1, ord('h'))
+  elif ch == ord('J'): run(1, 0, ord('j'))
+  elif ch == ord('K'): run(-1, 0, ord('k'))
+  elif ch == ord('L'): run(0, 1, ord('l'))
+  elif ch == ord('Y'): run(-1, -1, ord('y'))
+  elif ch == ord('U'): run(-1, 1, ord('u'))
+  elif ch == ord('B'): run(1, -1, ord('b'))
+  elif ch == ord('N'): run(1, 1, ord('n'))
   else: move(ch)
+
+# Run rogue
+def run(y, x, ch):
+  while dungeon[player_y+y][player_x+x] in '.#^':
+    move(ch)
+    render_level()
+    if dungeon[player_y][player_x] == '^': break
 
 # Move rogue
 def move(ch):
