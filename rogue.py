@@ -274,21 +274,37 @@ def read_key():
   
   # Run
   if ch == ord('H'):
-    while dungeon[player_y][player_x-1] in '.#': move(ord('h'))
+    while dungeon[player_y][player_x-1] in '.#^':
+      render_level()
+      move(ord('h'))
   elif ch == ord('J'):
-    while dungeon[player_y+1][player_x] in '.#': move(ord('j'))
+    while dungeon[player_y+1][player_x] in '.#^':
+      render_level()
+      move(ord('j'))
   elif ch == ord('K'):
-    while dungeon[player_y-1][player_x] in '.#': move(ord('k'))
+    while dungeon[player_y-1][player_x] in '.#^':
+      move(ord('k'))
+      render_level()
   elif ch == ord('L'):
-    while dungeon[player_y][player_x+1] in '.#': move(ord('l'))
+    while dungeon[player_y][player_x+1] in '.#^':
+      move(ord('l'))
+      render_level()
   elif ch == ord('Y'):
-    while dungeon[player_y-1][player_x-1] in '.#': move(ord('y'))
+    while dungeon[player_y-1][player_x-1] in '.#^':
+      move(ord('y'))
+      render_level()
   elif ch == ord('U'):
-    while dungeon[player_y-1][player_x+1] in '.#': move(ord('u'))
+    while dungeon[player_y-1][player_x+1] in '.#^':
+      move(ord('u'))
+      render_level()
   elif ch == ord('B'):
-    while dungeon[player_y+1][player_x-1] in '.#': move(ord('b'))
+    while dungeon[player_y+1][player_x-1] in '.#^':
+      move(ord('b'))
+      render_level()
   elif ch == ord('N'):
-    while dungeon[player_y+1][player_x+1] in '.#': move(ord('n'))
+    while dungeon[player_y+1][player_x+1] in '.#^':
+      move(ord('n'))
+      render_level()
   else: move(ch)
 
 # Move rogue
