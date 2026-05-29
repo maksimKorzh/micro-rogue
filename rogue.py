@@ -275,36 +275,44 @@ def read_key():
   # Run
   if ch == ord('H'):
     while dungeon[player_y][player_x-1] in '.#^':
-      render_level()
       move(ord('h'))
+      render_level()
+      take_action()
   elif ch == ord('J'):
     while dungeon[player_y+1][player_x] in '.#^':
       render_level()
       move(ord('j'))
+      take_action()
   elif ch == ord('K'):
     while dungeon[player_y-1][player_x] in '.#^':
       move(ord('k'))
       render_level()
+      take_action()
   elif ch == ord('L'):
     while dungeon[player_y][player_x+1] in '.#^':
       move(ord('l'))
       render_level()
+      take_action()
   elif ch == ord('Y'):
     while dungeon[player_y-1][player_x-1] in '.#^':
       move(ord('y'))
       render_level()
+      take_action()
   elif ch == ord('U'):
     while dungeon[player_y-1][player_x+1] in '.#^':
       move(ord('u'))
       render_level()
+      take_action()
   elif ch == ord('B'):
     while dungeon[player_y+1][player_x-1] in '.#^':
       move(ord('b'))
       render_level()
+      take_action()
   elif ch == ord('N'):
     while dungeon[player_y+1][player_x+1] in '.#^':
       move(ord('n'))
       render_level()
+      take_action()
   else: move(ch)
 
 # Move rogue
