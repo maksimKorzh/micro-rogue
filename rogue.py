@@ -243,7 +243,11 @@ def render_level():
           if dungeon[row][col] == '^':
             if [col, row] in revealed_traps: screen.addch(row, col, '^')
             else: screen.addch(row, col, '.')
-          else: screen.addch(row, col, dungeon[row][col])
+          else:
+            if dungeon[row][col] == '^':
+              if [col, row] in revealed_traps: screen.addch(row, col, '^')
+              else: screen.addch(row, col, '.')
+            else: screen.addch(row, col, dungeon[row][col])
         elif row in range(player_y-1, player_y+2) and col in range(player_x-1, player_x+2):
           screen.addch(row, col, dungeon[row][col])
           visited_tiles.append([col, row])
@@ -278,41 +282,49 @@ def read_key():
       move(ord('h'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('J'):
     while dungeon[player_y+1][player_x] in '.#^':
       render_level()
       move(ord('j'))
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('K'):
     while dungeon[player_y-1][player_x] in '.#^':
       move(ord('k'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('L'):
     while dungeon[player_y][player_x+1] in '.#^':
       move(ord('l'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('Y'):
     while dungeon[player_y-1][player_x-1] in '.#^':
       move(ord('y'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('U'):
     while dungeon[player_y-1][player_x+1] in '.#^':
       move(ord('u'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('B'):
     while dungeon[player_y+1][player_x-1] in '.#^':
       move(ord('b'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   elif ch == ord('N'):
     while dungeon[player_y+1][player_x+1] in '.#^':
       move(ord('n'))
       render_level()
       take_action()
+      if dungeon[player_y][player_x] == '^': break
   else: move(ch)
 
 # Move rogue
