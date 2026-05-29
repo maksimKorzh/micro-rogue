@@ -107,7 +107,7 @@ def fill_dungeon():
     dungeon[monster_pos[1]][monster_pos[0]] = monster
 
   # Place traps
-  traps = randrange(0, int(dungeon_level/2)+1)
+  traps = randrange(0, int(dungeon_level/4)+1)
   for i in range(traps):
     trap_pos = choice(get_floor_tiles())
     dungeon[trap_pos[1]][trap_pos[0]] = '^'
