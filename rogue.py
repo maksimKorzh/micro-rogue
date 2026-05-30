@@ -499,7 +499,7 @@ def load():
       player_y = game['player_y']
       player_hp = game['player_hp']
       player_food = game['player_food']
-      player_steps = game['player_food']
+      player_steps = game['player_steps']
       player_armor = game['player_armor']
       player_weapon = game['player_weapon']
       player_amulet = game['player_amulet']
