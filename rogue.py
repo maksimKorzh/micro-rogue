@@ -286,9 +286,19 @@ def read_key():
 
 # Run rogue
 def run(y, x, ch):
+  # Globals to change
+  global visited_tiles
+  
+  # Move along offset direction
   while dungeon[player_y+y][player_x+x] in '.#^':
+    if dark_rooms:
+      for off in [
+        (0, 0),
+        (1, 0), (-1, 0), (0, 1), (0, -1),
+        (2, 0), (-2, 0), (0, 2), (0, -2)
+      ]:
+        visited_tiles.append([player_x+off[0], player_y+off[1]])
     move(ch)
-    render_level()
     if dungeon[player_y][player_x] == '^': break
 
 # Move rogue
