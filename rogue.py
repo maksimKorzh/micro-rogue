@@ -256,7 +256,7 @@ def render_level():
         else: screen.addch(row, col, dungeon[row][col])
 
   # Render status line
-  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor({amulet_level}): {player_amulet}       Food: {player_food}')
+  screen.addstr(23, 0, f'Level: {dungeon_level}  HP: {player_hp}  Attack: {player_weapon}  Defense: {player_armor}  Amulet of Yendor({amulet_level}): {player_amulet}  Food: {player_food}')
   screen.clrtoeol()
   
   # Render player
